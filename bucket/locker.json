@@ -1,0 +1,50 @@
+{
+  "name@domain.com": {
+    "account-001": {
+      "account": "Someguy",
+      "password": "321321",
+      "recovery-codes": [
+        "123123-321321"
+      ]
+    },
+    "account-002": {
+      "account": "Someperson",
+      "password": "321321",
+      "recovery-codes": [
+        "123123-321321"
+      ]
+    }
+  },
+  "name@domain.edu": {
+    "account-001": {
+      "account": "Someguy",
+      "password": "321321",
+      "recovery-codes": [
+        "123123-321321"
+      ]
+    },
+    "account-002": {
+      "account": "Someperson",
+      "password": "321321",
+      "recovery-codes": [
+        "123123-321321"
+      ]
+    }
+  },
+  "name@domain.gov": {
+    "account-001": {
+      "account": "Someguy",
+      "password": "321321",
+      "recovery-codes": [
+        "123123-321321"
+      ]
+    },
+    "account-002": {
+      "account": "Someperson",
+      "password": "321321",
+      "recovery-codes": [
+        "123123-321321"
+      ]
+    }
+  }
+}
