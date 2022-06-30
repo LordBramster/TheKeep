@@ -20,7 +20,7 @@ class App(ttk.Frame):
 
     def setup_widgets(self):
 
-        self.img = tk.PhotoImage(file='gui/locked.png')
+        self.img = tk.PhotoImage(file='gui/locked_002.png')
         self.img_b = tk.Label(self, image=self.img)
         self.img_b.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
 
@@ -115,6 +115,7 @@ def load_json(file):
 
 if __name__ == "__main__":
     root = tk.Tk()
+    root.iconbitmap("gui/locked.ico")
     root.title("Locker")
     root.tk.call("source", "sun-valley.tcl")
     root.tk.call("set_theme", "dark")
