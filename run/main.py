@@ -1,6 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import filedialog
 import json
+from cryptography.fernet import Fernet
+import pyperclip
 
 
 class App(ttk.Frame):
@@ -15,14 +18,14 @@ class App(ttk.Frame):
         self.var_1 = tk.BooleanVar(value=True)
         self.var_2 = tk.BooleanVar()
         self.var_3 = tk.IntVar(value=2)
+        self.var_4 = tk.StringVar(value='FUCK TIDDY')
         self.var_5 = tk.DoubleVar(value=75.0)
         self.setup_widgets()
 
     def setup_widgets(self):
-
-        self.img = tk.PhotoImage(file='gui/locked_002.png')
+        self.img = tk.PhotoImage(file='gui/locked.png')
         self.img_b = tk.Label(self, image=self.img)
-        self.img_b.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
+        self.img_b.grid(row=0, column=0, padx=(40, 40), pady=(20, 10), sticky="ew")
 
         self.frame_L = ttk.Frame(self, padding=(0, 0, 0, 10))
         self.frame_L.grid(
@@ -32,17 +35,29 @@ class App(ttk.Frame):
 
         # Button
         self.button = ttk.Button(self.frame_L, text="Edit Credentials")
-        self.button.grid(row=6, column=0, padx=5, pady=10, sticky="nsew")
+        self.button.grid(row=6, column=0, padx=5, pady=10, ipadx=1, ipady=5, sticky="nsew")
 
         # Button
-        self.button2 = ttk.Button(self.frame_L, text="Copy Credentials")
-        self.button2.grid(row=7, column=0, padx=5, pady=10, sticky="nsew")
+        self.button2 = ttk.Button(self.frame_L, text="Copy Credentials",
+                                  command=lambda: self.clipboard_copy(self.var_4.get()))
+        self.button2.grid(row=7, column=0, padx=5, pady=10, ipadx=1, ipady=5, sticky="nsew")
+
+        # Button
+        self.button3 = ttk.Button(self.frame_L, text="Export (as .PDF, .DOCX, or .TXT)",
+                                  command=lambda: self.clipboard_copy(self.var_4.get()))
+        self.button3.grid(row=8, column=0, padx=5, pady=10, ipadx=1, ipady=5, sticky="nsew")
 
         # Accentbutton
         self.accentbutton = ttk.Button(
+            self.frame_L, text="Import Credentials", style="Accent.TButton", command=lambda: self.ask_openfile()
+        )
+        self.accentbutton.grid(row=9, column=0, padx=5, pady=10, ipadx=1, ipady=5, sticky="nsew")
+
+        # Accentbutton
+        self.accentbutton2 = ttk.Button(
             self.frame_L, text="Add New Credentials", style="Accent.TButton"
         )
-        self.accentbutton.grid(row=8, column=0, padx=5, pady=10, sticky="nsew")
+        self.accentbutton2.grid(row=10, column=0, padx=5, pady=10, ipadx=1, ipady=5, sticky="nsew")
 
         # Panedwindow
         self.paned = ttk.PanedWindow(self)
@@ -108,9 +123,30 @@ class App(ttk.Frame):
         self.sizegrip = ttk.Sizegrip(self)
         self.sizegrip.grid(row=100, column=100, padx=(0, 5), pady=(0, 5))
 
+    def ask_openfile(self):
+        return filedialog.askopenfile()
+
+    def ask_savefile(self):
+        return filedialog.asksaveasfile()
+
+    def clipboard_copy(self, item):
+        pyperclip.copy(item)
+
 
 def load_json(file):
     return json.load(open(file))
+
+
+def encrypt(string, key):
+    return Fernet(key).encrypt(string.encode())
+
+
+def decrypt(string, key):
+    return Fernet(key).decrypt(string).decode()
+
+
+def generate_key():
+    return Fernet.generate_key()
 
 
 if __name__ == "__main__":
@@ -126,3 +162,24 @@ if __name__ == "__main__":
     root.geometry("+{}+{}".format(int((root.winfo_screenwidth() / 2) - (root.winfo_width() / 2)),
                                   int((root.winfo_screenheight() / 2) - (root.winfo_height() / 2))))
     root.mainloop()
+
+    to_encrypt = '{"name":"John", "age":30, "city":"New York"}'
+    to_file = f'dump.ky'
+
+    key = generate_key()
+
+    enctex = encrypt(to_encrypt, key)
+    n1 = enctex.decode('UTF-8')
+
+    with open(to_file, 'w') as f:
+        f.write(n1)
+        f.close()
+
+    with open(to_file, 'r') as f:
+        file_data = f.read()
+
+    n2 = file_data.encode('UTF-8')
+    dectex = decrypt(n2, key)
+
+    completed = json.loads(dectex)
+    print(f'\n\n{completed}')
