@@ -4,6 +4,7 @@ from tkinter import filedialog
 import json
 from cryptography.fernet import Fernet
 import pyperclip
+import ast
 
 
 class App(ttk.Frame):
@@ -18,7 +19,7 @@ class App(ttk.Frame):
         self.var_1 = tk.BooleanVar(value=True)
         self.var_2 = tk.BooleanVar()
         self.var_3 = tk.IntVar(value=2)
-        self.var_4 = tk.StringVar(value='FUCK TIDDY')
+        self.var_4 = tk.StringVar(value='Insert Test String Here ...')
         self.var_5 = tk.DoubleVar(value=75.0)
         self.setup_widgets()
 
@@ -97,7 +98,7 @@ class App(ttk.Frame):
         # Define treeview data
         treeview_data = []
         p = 0
-        for parent, value1 in load_json('bucket/locker.json').items():
+        for parent, value1 in DISPLAY_DATA.items():
             p += 1
             treeview_data.append(
                 ("", p, parent, ('', '', ''))
@@ -109,7 +110,6 @@ class App(ttk.Frame):
                     (p, c, child, (value2['account'], value2['password'], value2['recovery-codes']))
                 )
             p = c
-        print(treeview_data)
 
         # Insert treeview data
         for item in treeview_data:
@@ -137,6 +137,17 @@ def load_json(file):
     return json.load(open(file))
 
 
+def file_write(file, mesg):
+    with open(file, 'w') as f:
+        f.write(mesg), f.close()
+
+
+def file_read(file):
+    with open(file, 'r') as f:
+        data = f.read()
+    return data
+
+
 def encrypt(string, key):
     return Fernet(key).encrypt(string.encode())
 
@@ -149,7 +160,7 @@ def generate_key():
     return Fernet.generate_key()
 
 
-if __name__ == "__main__":
+def start_gui():
     root = tk.Tk()
     root.iconbitmap("gui/locked.ico")
     root.title("Locker")
@@ -163,23 +174,23 @@ if __name__ == "__main__":
                                   int((root.winfo_screenheight() / 2) - (root.winfo_height() / 2))))
     root.mainloop()
 
-    to_encrypt = '{"name":"John", "age":30, "city":"New York"}'
-    to_file = f'dump.ky'
+
+if __name__ == "__main__":
+    FILE_PATH = 'bucket/blank.json'
+    FILE_DUMP = f'dump.ky'
+    # to_encrypt = '{"name@domain.com": {"account-001": {"account": "Someguy", "password": "321321", "recovery-codes": ["123123-321321"]}'
+    # to_encrypt = '{"name":"John", "age":30, "city":"New York"}'
+    DISPLAY_DATA = load_json(FILE_PATH)
+    to_encrypt = json.dumps(DISPLAY_DATA)
 
     key = generate_key()
 
     enctex = encrypt(to_encrypt, key)
     n1 = enctex.decode('UTF-8')
+    file_write(FILE_DUMP, n1)
 
-    with open(to_file, 'w') as f:
-        f.write(n1)
-        f.close()
-
-    with open(to_file, 'r') as f:
-        file_data = f.read()
-
+    file_data = file_read(FILE_DUMP)
     n2 = file_data.encode('UTF-8')
-    dectex = decrypt(n2, key)
-
-    completed = json.loads(dectex)
-    print(f'\n\n{completed}')
+    completed = json.loads(decrypt(n2, key))
+    DISPLAY_DATA = completed
+    start_gui()
