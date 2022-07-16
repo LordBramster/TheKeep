@@ -31,22 +31,36 @@ class App(ttk.Frame):
         # self.setup_new_window()
 
     def setup_new_window(self):
+        self.parent.destroy()
+        start_gui()
+
+        """
         new_window = tk.Toplevel(self.parent)
         new_window.geometry("500x500")
         new_window.iconbitmap("gui/locked.ico")
         new_window.title("New Window")
+        """
 
     def setup_login(self):
-        self.img = tk.PhotoImage(file='gui/locked_003.png')
-        img_b = tk.Label(self, image=self.img)
-        img_b.grid(row=0, column=0, padx=(40, 40), pady=(20, 10), sticky="ew")
-
         frame_root = ttk.Frame(self, padding=(0, 0, 0, 10))
-        frame_root.grid(row=1, column=0, padx=10, pady=(30, 10), sticky="nsew", rowspan=3)
+        frame_root.grid(row=0, column=0, padx=10, pady=(30, 10), sticky="nsew", rowspan=3)
         frame_root.columnconfigure(index=0, weight=1)
 
-        button = ttk.Button(frame_root, text="Login")
-        button.grid(row=6, column=0, padx=5, pady=10, ipadx=1, ipady=5, sticky="nsew")
+        self.img = tk.PhotoImage(file='gui/locked_003.png')
+        img_b = tk.Label(frame_root, image=self.img)
+        img_b.grid(row=0, column=0, padx=(40, 40), pady=(20, 10), sticky="ew")
+
+        entry_name = ttk.Entry(frame_root)
+        entry_name.insert(0, "Enter Username")
+        entry_name.grid(row=1, column=0, padx=5, pady=(0, 10), sticky="ew")
+
+        entry_pass = ttk.Entry(frame_root)
+        entry_pass.insert(0, "Enter Password")
+        entry_pass.grid(row=2, column=0, padx=5, pady=(0, 10), sticky="ew")
+
+        button = ttk.Button(frame_root, text="Continue",
+                            command=lambda: self.setup_new_window())
+        button.grid(row=3, column=0, padx=5, pady=10, ipadx=1, ipady=5, sticky="ew")
 
     def setup_main_menu(self):
         self.img = tk.PhotoImage(file='gui/locked_003.png')
