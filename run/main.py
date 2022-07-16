@@ -148,6 +148,12 @@ def file_read(file):
     return data
 
 
+def file_reads(file):
+    with open(file, 'r') as f:
+        data = f.readlines()
+    return data
+
+
 def encrypt(string, key):
     return Fernet(key).encrypt(string.encode())
 
@@ -176,26 +182,29 @@ def start_gui():
 
 
 if __name__ == "__main__":
-    FILE_BLANK = 'bucket/blank.json'
-    FILE_DUMP_KEY = f'data/k.ky'
-    FILE_DUMP_FILE = f'data/dump.ky'
+    FILE_BLANK = 'bucket/JSON/blank.json'
+    FILE_DUMP_KEY = f'bucket/data/k_dump.ky'
+    FILE_DUMP_FILE = f'bucket/data/j_dump.ky'
 
-    START_DATA = load_json(FILE_BLANK)
+    # SET_BLANK_DATA = load_json(FILE_BLANK)
+
+    # GET KEY
+    key_retrieved = file_read(FILE_DUMP_KEY)
+
+    # DECRYPT JSON
+    data_retrieved = file_read(FILE_DUMP_FILE)
+    DISPLAY_DATA = json.loads(decrypt(data_retrieved.encode('UTF-8'), key_retrieved))
 
     # KEY GENERATION
     key_generated = generate_key()
     file_write(FILE_DUMP_KEY, key_generated.decode('UTF-8'))
 
-    # GET KEY
-    key_retrieved = file_read(FILE_DUMP_KEY)
-
     # ENCRYPT DICT
-    encrypted_with_key = encrypt(json.dumps(START_DATA), key_retrieved)
+    encrypted_with_key = encrypt(json.dumps(DISPLAY_DATA), key_generated)
     file_write(FILE_DUMP_FILE, encrypted_with_key.decode('UTF-8'))
 
-    # DECRYPT JSON
-    data_retrieved = file_read(FILE_DUMP_FILE)
-    DISPLAY_DATA = json.loads(decrypt(data_retrieved.encode('UTF-8'), key_retrieved))
+    print(f'GET KEY -> {key_retrieved}')
+    print(f'NEW KEY -> {key_generated}')
 
     # START GUI
     start_gui()
