@@ -11,6 +11,7 @@ import ast
 class App(ttk.Frame):
     def __init__(self, parent):
         ttk.Frame.__init__(self)
+        self.parent = parent
 
         for index in [0, 1, 2]:
             self.columnconfigure(index=index, weight=1)
@@ -20,12 +21,35 @@ class App(ttk.Frame):
         self.var_1 = tk.BooleanVar(value=True)
         self.var_2 = tk.BooleanVar()
         self.var_3 = tk.IntVar(value=2)
-        self.var_4 = tk.StringVar(value='Insert Test String Here ...')
+        self.var_4 = tk.StringVar(value='Copied String !')
         self.var_5 = tk.DoubleVar(value=75.0)
-        self.setup_widgets()
+        self.setup_windows()
 
-    def setup_widgets(self):
-        self.img = tk.PhotoImage(file='gui/locked.png')
+    def setup_windows(self):
+        self.setup_login()
+        # self.setup_main_menu()
+        # self.setup_new_window()
+
+    def setup_new_window(self):
+        new_window = tk.Toplevel(self.parent)
+        new_window.geometry("500x500")
+        new_window.iconbitmap("gui/locked.ico")
+        new_window.title("New Window")
+
+    def setup_login(self):
+        self.img = tk.PhotoImage(file='gui/locked_003.png')
+        img_b = tk.Label(self, image=self.img)
+        img_b.grid(row=0, column=0, padx=(40, 40), pady=(20, 10), sticky="ew")
+
+        frame_root = ttk.Frame(self, padding=(0, 0, 0, 10))
+        frame_root.grid(row=1, column=0, padx=10, pady=(30, 10), sticky="nsew", rowspan=3)
+        frame_root.columnconfigure(index=0, weight=1)
+
+        button = ttk.Button(frame_root, text="Login")
+        button.grid(row=6, column=0, padx=5, pady=10, ipadx=1, ipady=5, sticky="nsew")
+
+    def setup_main_menu(self):
+        self.img = tk.PhotoImage(file='gui/locked_003.png')
         self.img_b = tk.Label(self, image=self.img)
         self.img_b.grid(row=0, column=0, padx=(40, 40), pady=(20, 10), sticky="ew")
 
@@ -41,12 +65,12 @@ class App(ttk.Frame):
 
         # Button
         self.button2 = ttk.Button(self.frame_L, text="Copy Credentials",
-                                  command=lambda: self.clipboard_copy(self.var_4.get()))
+                                  command=lambda: clipboard_copy(self.var_4.get()))
         self.button2.grid(row=7, column=0, padx=5, pady=10, ipadx=1, ipady=5, sticky="nsew")
 
         # Button
         self.button3 = ttk.Button(self.frame_L, text="Export (as .PDF, .DOCX, or .TXT)",
-                                  command=lambda: self.clipboard_copy(self.var_4.get()))
+                                  command=lambda: self.openNewWindow())
         self.button3.grid(row=8, column=0, padx=5, pady=10, ipadx=1, ipady=5, sticky="nsew")
 
         # Accentbutton
@@ -124,8 +148,9 @@ class App(ttk.Frame):
         self.sizegrip = ttk.Sizegrip(self)
         self.sizegrip.grid(row=100, column=100, padx=(0, 5), pady=(0, 5))
 
-    def clipboard_copy(self, item):
-        pyperclip.copy(item)
+
+def clipboard_copy(self, item):
+    pyperclip.copy(item)
 
 
 def ask_openfile(file_types):
