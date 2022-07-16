@@ -176,20 +176,23 @@ def start_gui():
 
 
 if __name__ == "__main__":
-    FILE_PATH = 'bucket/blank.json'
-    FILE_DUMP = f'dump.ky'
+    FILE_BLANK = 'bucket/blank.json'
+    FILE_DUMP_KEY = f'.ky'
+    FILE_DUMP_FILE = f'dump.ky'
+
     # to_encrypt = '{"name@domain.com": {"account-001": {"account": "Someguy", "password": "321321", "recovery-codes": ["123123-321321"]}'
     # to_encrypt = '{"name":"John", "age":30, "city":"New York"}'
-    DISPLAY_DATA = load_json(FILE_PATH)
+
+    DISPLAY_DATA = load_json(FILE_BLANK)
     to_encrypt = json.dumps(DISPLAY_DATA)
 
     key = generate_key()
 
     enctex = encrypt(to_encrypt, key)
     n1 = enctex.decode('UTF-8')
-    file_write(FILE_DUMP, n1)
+    file_write(FILE_DUMP_FILE, n1)
 
-    file_data = file_read(FILE_DUMP)
+    file_data = file_read(FILE_DUMP_FILE)
     n2 = file_data.encode('UTF-8')
     completed = json.loads(decrypt(n2, key))
     DISPLAY_DATA = completed
