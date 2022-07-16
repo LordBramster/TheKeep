@@ -188,7 +188,7 @@ if __name__ == "__main__":
     FILES_ACCEPT = [('Custom Files', '*.ky')]
     FILE_BLANK = 'bucket/JSON/blank.json'
     FILE_DUMP_KEY = f'bucket/data/k_dump.ky'
-    FILE_DUMP_FILE = f'bucket/data/dump.ky'
+    FILE_DUMP_FILE = f'bucket/data/j_dump.ky'
     # SET_BLANK_DATA = load_json(FILE_BLANK)
 
     # CHECK FILES DO EXIST
