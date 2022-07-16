@@ -5,7 +5,7 @@ from tkinter import filedialog
 import json
 from cryptography.fernet import Fernet
 import pyperclip
-import ast
+import time
 
 
 class App(ttk.Frame):
@@ -17,12 +17,10 @@ class App(ttk.Frame):
             self.columnconfigure(index=index, weight=1)
             self.rowconfigure(index=index, weight=1)
 
-        self.var_0 = tk.BooleanVar()
-        self.var_1 = tk.BooleanVar(value=True)
-        self.var_2 = tk.BooleanVar()
-        self.var_3 = tk.IntVar(value=2)
-        self.var_4 = tk.StringVar(value='Copied String !')
-        self.var_5 = tk.DoubleVar(value=75.0)
+        self.var_enter_username = tk.StringVar(value='Account name')
+        self.var_enter_password = tk.StringVar(value='')
+        self.var_progressbar = tk.DoubleVar(value=0.0)
+
         self.setup_windows()
 
     def setup_windows(self):
@@ -43,24 +41,47 @@ class App(ttk.Frame):
 
     def setup_login(self):
         frame_root = ttk.Frame(self, padding=(0, 0, 0, 10))
-        frame_root.grid(row=0, column=0, padx=10, pady=(30, 10), sticky="nsew", rowspan=3)
+        frame_root.grid(row=0, column=0, padx=(20, 20), pady=(50, 50), sticky="nsew", rowspan=3)
         frame_root.columnconfigure(index=0, weight=1)
 
-        self.img = tk.PhotoImage(file='gui/locked_003.png')
+        self.img = tk.PhotoImage(file='gui/locked_002.png')
         img_b = tk.Label(frame_root, image=self.img)
-        img_b.grid(row=0, column=0, padx=(40, 40), pady=(20, 10), sticky="ew")
+        img_b.grid(row=1, column=0, padx=(40, 40), pady=(10, 10), sticky="ew")
+
+        label = ttk.Label(
+            frame_root,
+            text="Locker",
+            justify="center",
+            font=("-size", 30, "-weight", "bold"))
+        label.grid(row=2, column=0, pady=10, columnspan=2)
+
+        label2 = ttk.Label(
+            frame_root,
+            text="A simple and secure way, to manage passwords.",
+            justify="center",
+            font=("-size", 8, "-weight", "normal"))
+        label2.grid(row=3, column=0, pady=(10, 1), padx=(1, 1), columnspan=2)
 
         entry_name = ttk.Entry(frame_root)
-        entry_name.insert(0, "Enter Username")
-        entry_name.grid(row=1, column=0, padx=5, pady=(0, 10), sticky="ew")
+        entry_name.insert(0, self.var_enter_username.get())
+        entry_name.grid(row=4, column=0, padx=(1, 1), pady=(30, 1), ipady=10, ipadx=50, sticky="ew")
 
-        entry_pass = ttk.Entry(frame_root)
-        entry_pass.insert(0, "Enter Password")
-        entry_pass.grid(row=2, column=0, padx=5, pady=(0, 10), sticky="ew")
+        entry_pass = ttk.Entry(frame_root, show='*')
+        entry_pass.insert(0, self.var_enter_username.get())
+        entry_pass.grid(row=5, column=0, padx=(1, 1), pady=(1, 30), ipady=10, ipadx=50, sticky="ew")
 
         button = ttk.Button(frame_root, text="Continue",
-                            command=lambda: self.setup_new_window())
-        button.grid(row=3, column=0, padx=5, pady=10, ipadx=1, ipady=5, sticky="ew")
+                            style="Accent.TButton",
+                            command=lambda: self.progressbar_increase())
+        button.grid(row=6, column=0, padx=(1, 1), pady=(1, 1), ipady=10, ipadx=50, sticky="ew")
+
+        """     
+        progressbar = ttk.Progressbar(frame_root, value=0, variable=self.var_progressbar, mode="determinate")
+        progressbar.grid(row=10, column=0, padx=(10, 20), pady=(20, 0), sticky="ew")
+        """
+
+    def setup_create_account(self):
+        return
 
     def setup_main_menu(self):
         self.img = tk.PhotoImage(file='gui/locked_003.png')
@@ -69,8 +90,7 @@ class App(ttk.Frame):
 
         self.frame_L = ttk.Frame(self, padding=(0, 0, 0, 10))
         self.frame_L.grid(
-            row=1, column=0, padx=10, pady=(30, 10), sticky="nsew", rowspan=3
-        )
+            row=1, column=0, padx=10, pady=(30, 10), sticky="nsew", rowspan=3)
         self.frame_L.columnconfigure(index=0, weight=1)
 
         # Button
@@ -78,25 +98,21 @@ class App(ttk.Frame):
         self.button.grid(row=6, column=0, padx=5, pady=10, ipadx=1, ipady=5, sticky="nsew")
 
         # Button
-        self.button2 = ttk.Button(self.frame_L, text="Copy Credentials",
-                                  command=lambda: clipboard_copy(self.var_4.get()))
+        self.button2 = ttk.Button(self.frame_L, text="Copy Credentials")
         self.button2.grid(row=7, column=0, padx=5, pady=10, ipadx=1, ipady=5, sticky="nsew")
 
         # Button
-        self.button3 = ttk.Button(self.frame_L, text="Export (as .PDF, .DOCX, or .TXT)",
-                                  command=lambda: self.openNewWindow())
+        self.button3 = ttk.Button(self.frame_L, text="Export (as .PDF, .DOCX, or .TXT)")
         self.button3.grid(row=8, column=0, padx=5, pady=10, ipadx=1, ipady=5, sticky="nsew")
 
         # Accentbutton
         self.accentbutton = ttk.Button(
-            self.frame_L, text="Import Credentials", style="Accent.TButton", command=lambda: ask_openfile()
-        )
+            self.frame_L, text="Import Credentials", style="Accent.TButton", command=lambda: ask_openfile())
         self.accentbutton.grid(row=9, column=0, padx=5, pady=10, ipadx=1, ipady=5, sticky="nsew")
 
         # Accentbutton
         self.accentbutton2 = ttk.Button(
-            self.frame_L, text="Add New Credentials", style="Accent.TButton"
-        )
+            self.frame_L, text="Add New Credentials", style="Accent.TButton")
         self.accentbutton2.grid(row=10, column=0, padx=5, pady=10, ipadx=1, ipady=5, sticky="nsew")
 
         # Panedwindow
@@ -117,8 +133,7 @@ class App(ttk.Frame):
             selectmode="browse",
             yscrollcommand=self.scrollbar.set,
             columns=(1, 2, 3),
-            height=10,
-        )
+            height=10)
         self.treeview.pack(expand=True, fill="both")
         self.scrollbar.config(command=self.treeview.yview)
 
@@ -161,6 +176,13 @@ class App(ttk.Frame):
         # Sizegrip
         self.sizegrip = ttk.Sizegrip(self)
         self.sizegrip.grid(row=100, column=100, padx=(0, 5), pady=(0, 5))
+
+    def click_callback(self, event, widget):
+        widget.delete(0, "end")
+        return None
+
+    def progressbar_increase(self, number=15):
+        self.var_progressbar.set(self.var_progressbar.get() + number)
 
 
 def clipboard_copy(self, item):
@@ -211,7 +233,7 @@ def generate_key():
 def start_gui():
     root = tk.Tk()
     root.iconbitmap("gui/locked.ico")
-    root.title("Locker")
+    root.title("Login")
     root.tk.call("source", "sun-valley.tcl")
     root.tk.call("set_theme", "dark")
     app = App(root)
