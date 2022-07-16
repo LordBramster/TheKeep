@@ -178,7 +178,7 @@ def start_gui():
 if __name__ == "__main__":
     FILE_BLANK = 'bucket/blank.json'
     FILE_DUMP_KEY = f'data/k.ky'
-    FILE_DUMP_FILE = f'dump.ky'
+    FILE_DUMP_FILE = f'data/dump.ky'
 
     # to_encrypt = '{"name@domain.com": {"account-001": {"account": "Someguy", "password": "321321", "recovery-codes": ["123123-321321"]}'
     # to_encrypt = '{"name":"John", "age":30, "city":"New York"}'
