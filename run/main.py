@@ -180,16 +180,13 @@ if __name__ == "__main__":
     FILE_DUMP_KEY = f'data/k.ky'
     FILE_DUMP_FILE = f'data/dump.ky'
 
-    # to_encrypt = '{"name@domain.com": {"account-001": {"account": "Someguy", "password": "321321", "recovery-codes": ["123123-321321"]}'
-    # to_encrypt = '{"name":"John", "age":30, "city":"New York"}'
-
     START_DATA = load_json(FILE_BLANK)
 
     # KEY GENERATION
     key_generated = generate_key()
+    file_write(FILE_DUMP_KEY, key_generated.decode('UTF-8'))
 
     # GET KEY
-    file_write(FILE_DUMP_KEY, key_generated.decode('UTF-8'))
     key_retrieved = file_read(FILE_DUMP_KEY)
 
     # ENCRYPT DICT
