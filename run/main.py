@@ -1,3 +1,4 @@
+import os.path
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
@@ -50,7 +51,7 @@ class App(ttk.Frame):
 
         # Accentbutton
         self.accentbutton = ttk.Button(
-            self.frame_L, text="Import Credentials", style="Accent.TButton", command=lambda: self.ask_openfile()
+            self.frame_L, text="Import Credentials", style="Accent.TButton", command=lambda: ask_openfile()
         )
         self.accentbutton.grid(row=9, column=0, padx=5, pady=10, ipadx=1, ipady=5, sticky="nsew")
 
@@ -123,14 +124,16 @@ class App(ttk.Frame):
         self.sizegrip = ttk.Sizegrip(self)
         self.sizegrip.grid(row=100, column=100, padx=(0, 5), pady=(0, 5))
 
-    def ask_openfile(self):
-        return filedialog.askopenfile()
-
-    def ask_savefile(self):
-        return filedialog.asksaveasfile()
-
     def clipboard_copy(self, item):
         pyperclip.copy(item)
+
+
+def ask_openfile(file_types):
+    return filedialog.askopenfilename(filetypes=file_types)
+
+
+def ask_savefile():
+    return filedialog.asksaveasfile()
 
 
 def load_json(file):
@@ -182,11 +185,17 @@ def start_gui():
 
 
 if __name__ == "__main__":
+    FILES_ACCEPT = [('Custom Files', '*.ky')]
     FILE_BLANK = 'bucket/JSON/blank.json'
     FILE_DUMP_KEY = f'bucket/data/k_dump.ky'
-    FILE_DUMP_FILE = f'bucket/data/j_dump.ky'
-
+    FILE_DUMP_FILE = f'bucket/data/dump.ky'
     # SET_BLANK_DATA = load_json(FILE_BLANK)
+
+    # CHECK FILES DO EXIST
+    if not os.path.exists(FILE_DUMP_FILE):
+        FILE_DUMP_FILE = ask_openfile(FILES_ACCEPT)
+    if not os.path.exists(FILE_DUMP_KEY):
+        FILE_DUMP_KEY = ask_openfile(FILES_ACCEPT)
 
     # GET KEY
     key_retrieved = file_read(FILE_DUMP_KEY)
