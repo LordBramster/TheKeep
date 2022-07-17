@@ -17,7 +17,7 @@ class App(ttk.Frame):
             self.columnconfigure(index=index, weight=1)
             self.rowconfigure(index=index, weight=1)
 
-        self.var_enter_username = tk.StringVar(value='Account name')
+        self.var_enter_username = tk.StringVar(value='Account Name')
         self.var_enter_password = tk.StringVar(value='')
         self.var_progressbar = tk.DoubleVar(value=0.0)
 
