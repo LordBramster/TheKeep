@@ -29,19 +29,14 @@ class App(ttk.Frame):
         # self.setup_new_window()
 
     def setup_new_window(self):
-        self.parent.destroy()
-        start_gui()
-
-        """
         new_window = tk.Toplevel(self.parent)
         new_window.geometry("500x500")
         new_window.iconbitmap("gui/locked.ico")
-        new_window.title("New Window")
-        """
+        new_window.title("Sign Up")
 
     def setup_login(self):
         frame_root = ttk.Frame(self, padding=(0, 0, 0, 10))
-        frame_root.grid(row=0, column=0, padx=(20, 20), pady=(50, 50), sticky="nsew", rowspan=3)
+        frame_root.grid(row=0, column=0, padx=(30, 30), pady=(50, 50), sticky="nsew", rowspan=3)
         frame_root.columnconfigure(index=0, weight=1)
 
         self.img = tk.PhotoImage(file='gui/locked_002.png')
@@ -64,16 +59,28 @@ class App(ttk.Frame):
 
         entry_name = ttk.Entry(frame_root)
         entry_name.insert(0, self.var_enter_username.get())
-        entry_name.grid(row=4, column=0, padx=(1, 1), pady=(30, 1), ipady=10, ipadx=50, sticky="ew")
+        entry_name.grid(row=4, column=0, padx=(1, 1), pady=(30, 1), ipady=10, ipadx=40, sticky="ew")
 
         entry_pass = ttk.Entry(frame_root, show='*')
         entry_pass.insert(0, self.var_enter_username.get())
-        entry_pass.grid(row=5, column=0, padx=(1, 1), pady=(1, 30), ipady=10, ipadx=50, sticky="ew")
+        entry_pass.grid(row=5, column=0, padx=(1, 1), pady=(1, 30), ipady=10, ipadx=40, sticky="ew")
 
-        button = ttk.Button(frame_root, text="Continue",
+        button = ttk.Button(frame_root, text="Sign In",
                             style="Accent.TButton",
-                            command=lambda: self.progressbar_increase())
-        button.grid(row=6, column=0, padx=(1, 1), pady=(1, 1), ipady=10, ipadx=50, sticky="ew")
+                            command=lambda: self.setup_main_menu())
+        button.grid(row=6, column=0, padx=(1, 1), pady=(1, 1), ipady=10, ipadx=40, sticky="ew")
+
+        label3 = ttk.Label(
+            frame_root,
+            text="or",
+            justify="center",
+            font=("-size", 8, "-weight", "normal"))
+        label3.grid(row=7, column=0, pady=(10, 10), padx=(1, 1), columnspan=2)
+
+        button = ttk.Button(frame_root, text="Create Account",
+                            # style="Accent.TButton",
+                            command=lambda: self.setup_new_window())
+        button.grid(row=8, column=0, padx=(1, 1), pady=(1, 1), ipady=10, ipadx=20, sticky="ew")
 
         """     
         progressbar = ttk.Progressbar(frame_root, value=0, variable=self.var_progressbar, mode="determinate")
@@ -245,36 +252,42 @@ def start_gui():
     root.mainloop()
 
 
+def get_data_from(dump_file, key_file):
+    # CHECK FILES DO EXIST
+    if not os.path.exists(dump_file):
+        FILE_DUMP_FILE = ask_openfile(FILES_ACCEPT)
+    if not os.path.exists(key_file):
+        FILE_DUMP_KEY = ask_openfile(FILES_ACCEPT)
+
+    # GET KEY
+    key_retrieved = file_read(key_file)
+    print(f'GET KEY -> {key_retrieved}')
+
+    # DECRYPT JSON
+    data_retrieved = file_read(dump_file)
+    dump_data = json.loads(decrypt(data_retrieved.encode('UTF-8'), key_retrieved))
+
+    return dump_data
+
+
+def push_data_to(from_data, dump_file, key_file):
+    # KEY GENERATION
+    key_generated = generate_key()
+    file_write(key_file, key_generated.decode('UTF-8'))
+    print(f'NEW KEY -> {key_generated}')
+
+    # ENCRYPT DICT
+    encrypted_with_key = encrypt(json.dumps(from_data), key_generated)
+    file_write(dump_file, encrypted_with_key.decode('UTF-8'))
+
+
 if __name__ == "__main__":
     FILES_ACCEPT = [('Custom Files', '*.ky')]
     FILE_BLANK = 'bucket/JSON/blank.json'
     FILE_DUMP_KEY = f'bucket/data/k_dump.ky'
     FILE_DUMP_FILE = f'bucket/data/j_dump.ky'
+    DISPLAY_DATA = get_data_from(FILE_DUMP_FILE, FILE_DUMP_KEY)
     # SET_BLANK_DATA = load_json(FILE_BLANK)
-
-    # CHECK FILES DO EXIST
-    if not os.path.exists(FILE_DUMP_FILE):
-        FILE_DUMP_FILE = ask_openfile(FILES_ACCEPT)
-    if not os.path.exists(FILE_DUMP_KEY):
-        FILE_DUMP_KEY = ask_openfile(FILES_ACCEPT)
-
-    # GET KEY
-    key_retrieved = file_read(FILE_DUMP_KEY)
-
-    # DECRYPT JSON
-    data_retrieved = file_read(FILE_DUMP_FILE)
-    DISPLAY_DATA = json.loads(decrypt(data_retrieved.encode('UTF-8'), key_retrieved))
-
-    # KEY GENERATION
-    key_generated = generate_key()
-    file_write(FILE_DUMP_KEY, key_generated.decode('UTF-8'))
-
-    # ENCRYPT DICT
-    encrypted_with_key = encrypt(json.dumps(DISPLAY_DATA), key_generated)
-    file_write(FILE_DUMP_FILE, encrypted_with_key.decode('UTF-8'))
-
-    print(f'GET KEY -> {key_retrieved}')
-    print(f'NEW KEY -> {key_generated}')
 
     # START GUI
     start_gui()
